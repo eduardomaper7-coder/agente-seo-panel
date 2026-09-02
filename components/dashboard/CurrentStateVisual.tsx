@@ -32,7 +32,7 @@ export function CurrentStateVisual({ keywords }: { keywords: KeywordDatos[] }) {
                 style={{ width: `${pct}%`, backgroundColor: COLOR_BANDA[banda] }}
               />
             </div>
-            <span className="w-16 shrink-0 text-right">
+            <span className="shrink-0 text-right">
               <KeywordPositionBadge posicion={k.posicionActual} />
             </span>
           </div>

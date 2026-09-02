@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* El color de fondo/texto del body se controla con clases de Tailwind
+   (bg-paper / text-ink) directamente en app/layout.tsx — los tokens de
+   color viven en tailwind.config.ts, en un único sitio. */
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Barra de scroll fina y discreta, coherente con la estética del panel. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(11 27 58 / 0.15);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(11 27 58 / 0.25);
+}

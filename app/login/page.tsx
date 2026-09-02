@@ -115,10 +115,6 @@ export default function LoginPage() {
           aria-hidden
         />
 
-        <div className="relative z-10">
-          <AibeLogo size={40} />
-        </div>
-
         <div className="relative max-w-md">
           <h1 className="text-[2.15rem] font-semibold leading-[1.15] text-white text-balance">
             Tu posicionamiento en Google, claro y bajo control.
@@ -163,8 +159,8 @@ export default function LoginPage() {
       {/* Zona de acceso */}
       <div className="flex flex-1 flex-col items-center justify-center bg-paper px-6 py-12">
         <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden">
-            <AibeLogo size={30} />
+          <div className="mb-8 flex justify-center">
+            <AibeLogo size={36} />
           </div>
 
           <div className="rounded-aibe border border-ink/10 bg-white p-7 shadow-aibe-md sm:p-8">

@@ -18,13 +18,13 @@ export function StatCard({
   trend?: ReactNode;
 }) {
   return (
-    <Card className="p-4">
-      <div className="mb-2 flex items-center justify-between">
+    <Card className="min-w-[150px] flex-1 p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-xs font-medium uppercase tracking-wide text-ink/45">
           {tooltip ? <Tooltip text={tooltip}>{label}</Tooltip> : label}
         </span>
         {Icon && (
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/10 text-accent">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
             <Icon size={15} strokeWidth={2} />
           </span>
         )}

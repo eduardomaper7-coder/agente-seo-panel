@@ -40,8 +40,12 @@ export function ResumenView({ datos, basePath = "/dashboard" }: { datos: Dashboa
         }
       />
 
-      {/* Nivel 1 — resultados */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      {/* Nivel 1 — resultados. flex-wrap en vez de un grid de columnas fijas:
+          el número de tarjetas varía (4 a 6, según si hay histórico para
+          "mejoran"/"bajan") y un grid-cols-6 fijo las dejaba demasiado
+          estrechas cuando salían menos de 6 — cada StatCard pone su propio
+          min-width y crece para repartirse el espacio sobrante. */}
+      <div className="flex flex-wrap gap-3">
         <StatCard
           label="Keywords monitorizadas"
           value={kpis.totalKeywords}

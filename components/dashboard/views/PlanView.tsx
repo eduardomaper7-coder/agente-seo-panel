@@ -63,7 +63,7 @@ export function PlanView({ datos }: { datos: DashboardData }) {
       ) : (
         <>
           {objetivos.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="flex flex-wrap gap-3">
               <StatCard label="En curso" value={enCurso} icon={ClipboardList} />
               <StatCard label="Completadas" value={completadas} icon={CheckCircle2} />
               {[...porPilar.entries()].map(([pilar, n]) => (

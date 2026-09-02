@@ -1,24 +1,23 @@
-// Marca de Aibe Technologies en vectores (mismo triángulo que en el PDF de
-// informes, ver lib/informes-pdf.ts) — cero dependencia de un archivo de
-// imagen. Componente compartido entre el AppShell del panel y las pantallas
-// de acceso (login/registro) para que la identidad visual sea una sola.
+/* eslint-disable @next/next/no-img-element */
+// Marca de Aibe Technologies — el logotipo oficial (public/brand), en color
+// para fondos claros y en blanco (misma imagen, silueta recoloreada) para
+// el panel oscuro del login. Componente compartido entre el AppShell del
+// panel y las pantallas de acceso para que la identidad visual sea una
+// sola. Proporción real del archivo: 1038×427 (≈2.43:1).
+const ASPECT_RATIO = 1038 / 427;
+
 export function AibeLogo({ size = 20, dark = false }: { size?: number; dark?: boolean }) {
+  const height = size * 1.15;
+  const width = height * ASPECT_RATIO;
+
   return (
-    <div className="flex items-center gap-2">
-      <svg width={size} height={size} viewBox="0 0 24 24" className="shrink-0">
-        <path d="M12 2 L22 20 L16.5 20 L12 11.5 L7.5 20 L2 20 Z" fill={dark ? "#FFFFFF" : "#124FC4"} />
-      </svg>
-      <div className="leading-none">
-        <p className={`font-semibold ${dark ? "text-white" : "text-ink"}`} style={{ fontSize: size * 0.65 }}>
-          Aibe
-        </p>
-        <p
-          className={`uppercase tracking-wider ${dark ? "text-white/50" : "text-ink/40"}`}
-          style={{ fontSize: size * 0.45 }}
-        >
-          Technologies
-        </p>
-      </div>
-    </div>
+    <img
+      src={dark ? "/brand/aibe-logo-white.png" : "/brand/aibe-logo.png"}
+      alt="Aibe Technologies"
+      width={Math.round(width)}
+      height={Math.round(height)}
+      className="shrink-0"
+      style={{ height, width: "auto" }}
+    />
   );
 }

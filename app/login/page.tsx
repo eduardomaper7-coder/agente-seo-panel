@@ -115,6 +115,13 @@ export default function LoginPage() {
           aria-hidden
         />
 
+        {/* Hueco invisible del mismo tamaño que ocupaba el logo — el logo ya
+            no va aquí, pero se conserva el espaciado original para que el
+            bloque de texto quede en la misma posición de antes. */}
+        <div className="invisible" aria-hidden="true">
+          <AibeLogo size={40} />
+        </div>
+
         <div className="relative max-w-md">
           <h1 className="text-[2.15rem] font-semibold leading-[1.15] text-white text-balance">
             Tu posicionamiento en Google, claro y bajo control.

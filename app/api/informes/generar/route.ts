@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   for (const clienteId of clienteIds) {
     try {
       const datos = await reunirDatosInforme(clienteId, mes);
-      if (!datos.cliente) {
+      if (!datos) {
         resumen.push({ clienteId, error: "Cliente no encontrado." });
         continue;
       }
@@ -70,17 +70,15 @@ export async function GET(req: NextRequest) {
           mes: `${mes}-01`,
           pdf_url: publicUrlData.publicUrl,
           resumen_metricas: {
-            keywords_en_seguimiento: datos.keywords.length,
-            keywords_mejoradas: datos.keywords.filter(
-              (k) => k.posicionInicio !== null && k.posicionFin !== null && k.posicionFin < k.posicionInicio
-            ).length,
+            keywords_en_seguimiento: datos.kpis.totalKeywords,
+            keywords_mejoradas: datos.kpis.mejoran ?? 0,
             trafico: datos.yandex,
             pagespeed: datos.pagespeed,
           },
           resumen_trabajo: {
             objetivos_cumplidos: datos.objetivos.filter((o) => o.estado === "cumplido").length,
-            objetivos_activos: datos.objetivos.filter((o) => o.estado === "activo").length,
-            tareas_completadas: datos.tareasCompletadas.length,
+            objetivos_activos: datos.kpis.objetivosActivos,
+            tareas_completadas: datos.tareasCompletadasMes.length,
           },
         },
         { onConflict: "cliente_id,mes" }

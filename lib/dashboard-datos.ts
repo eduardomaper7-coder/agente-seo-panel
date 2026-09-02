@@ -139,7 +139,7 @@ const DEMO: DashboardData = {
 // de servicio (se salta RLS, panel interno de la agencia). Así solo hay un
 // sitio donde vive la lógica de KPIs/histórico/competidores, tanto si la
 // pide el propio cliente como si la pide un administrador.
-async function construirDatos(
+export async function construirDatos(
   supabase: any,
   cliente: { id: string; nombre_negocio: string },
   email: string | null

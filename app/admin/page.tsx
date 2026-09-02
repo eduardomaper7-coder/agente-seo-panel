@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createServiceClient } from "@/lib/supabase/server";
+import { subirLogoCliente } from "./actions";
 
 // Esta página consulta Supabase en cada visita — nunca debe quedar
 // "congelada" en una versión estática generada en el momento del build,
@@ -26,7 +27,7 @@ async function getClientes() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("clientes")
-    .select("id, nombre_negocio, sector, ubicacion, activo, auth_user_id")
+    .select("id, nombre_negocio, sector, ubicacion, activo, auth_user_id, logo_url")
     .order("creado_en", { ascending: false });
   return { clientes: data ?? [], demo: false };
 }
@@ -66,6 +67,7 @@ export default async function AdminClientesPage() {
               <th className="px-4 py-3">Sector</th>
               <th className="px-4 py-3">Ubicación</th>
               <th className="px-4 py-3">Estado</th>
+              <th className="px-4 py-3">Logo del informe</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -83,6 +85,38 @@ export default async function AdminClientesPage() {
                   >
                     {c.activo ? "Activo" : "Pausado"}
                   </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    {c.logo_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={c.logo_url}
+                        alt={`Logo de ${c.nombre_negocio}`}
+                        className="h-7 w-7 shrink-0 rounded border border-ink/10 object-contain bg-white"
+                      />
+                    ) : (
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-dashed border-ink/15 text-[9px] text-ink/25">
+                        —
+                      </span>
+                    )}
+                    <form action={subirLogoCliente} className="flex items-center gap-1.5">
+                      <input type="hidden" name="clienteId" value={c.id} />
+                      <input
+                        type="file"
+                        name="logo"
+                        accept="image/png,image/jpeg,image/webp"
+                        required
+                        className="w-32 text-[11px] text-ink/50 file:mr-1.5 file:rounded file:border-0 file:bg-ink/[0.06] file:px-1.5 file:py-1 file:text-[10px] file:text-ink/60"
+                      />
+                      <button
+                        type="submit"
+                        className="shrink-0 rounded-md border border-ink/15 px-2 py-1 text-[11px] font-medium text-ink/70 hover:bg-ink/[0.03]"
+                      >
+                        {c.logo_url ? "Cambiar" : "Subir"}
+                      </button>
+                    </form>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-right">
                   {c.auth_user_id ? (

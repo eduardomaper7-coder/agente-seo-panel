@@ -24,7 +24,11 @@ create table clientes (
   -- vincula este cliente con su usuario de Supabase Auth para el login del panel
   auth_user_id uuid references auth.users(id),
   activo boolean not null default true,
-  creado_en timestamptz not null default now()
+  creado_en timestamptz not null default now(),
+  -- URL pública (bucket "logos-clientes") del logo del negocio, subido desde
+  -- /admin — se usa en la portada de su informe SEO mensual. Nulo = todavía
+  -- no tiene logo, el informe usa un monograma genérico mientras tanto.
+  logo_url text
 );
 
 -- ---------------------------------------------------------------------------
@@ -285,4 +289,11 @@ on conflict (id) do nothing;
 -- aquí antes de que se conviertan en una página real de la web del cliente.
 insert into storage.buckets (id, name, public)
 values ('borradores', 'borradores', true)
+on conflict (id) do nothing;
+
+-- Bucket público para el logo de cada negocio de la cartera (ver
+-- clientes.logo_url) — solo el rol de servicio puede subir (desde
+-- /admin), lectura pública directa por URL para poder embeberlo en el PDF.
+insert into storage.buckets (id, name, public)
+values ('logos-clientes', 'logos-clientes', true)
 on conflict (id) do nothing;

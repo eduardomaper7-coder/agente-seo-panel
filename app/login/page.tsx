@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { esCorreoAdmin } from "@/lib/admin-emails";
 import { AibeLogo } from "@/components/ui/AibeLogo";
 
 // Un único formulario de login sirve para las dos audiencias del sistema
@@ -46,7 +47,9 @@ export default function LoginPage() {
       setError("Correo o contraseña incorrectos.");
       return;
     }
-    window.location.href = "/dashboard";
+    // Las cuentas del equipo de Aibe Technologies entran directamente a la
+    // cartera de clientes; el resto, a su propio panel.
+    window.location.href = esCorreoAdmin(email) ? "/admin" : "/dashboard";
   }
 
   async function handleRegistro(e: React.FormEvent) {

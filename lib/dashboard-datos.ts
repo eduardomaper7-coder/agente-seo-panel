@@ -6,7 +6,7 @@
 // posición" / "cambio" a partir de `posiciones_historial` cuando existe de
 // verdad, en vez de inventar una tendencia.
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 export type { BadgeEstado } from "@/lib/seo-bandas";
 export { clasificarPosicion } from "@/lib/seo-bandas";
 
@@ -135,25 +135,17 @@ const DEMO: DashboardData = {
   ],
 };
 
-// Envuelto con React.cache: el layout del panel y la página activa piden
-// ambos estos datos en la misma petición — cache() hace que la segunda
-// llamada reutilice la primera en vez de repetir las consultas a Supabase.
-export const getDashboardData = cache(async (): Promise<DashboardData> => {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return DEMO;
-
-  const { data: cliente } = await supabase
-    .from("clientes")
-    .select("id, nombre_negocio")
-    .eq("auth_user_id", user.id)
-    .single();
-
-  if (!cliente) return DEMO;
-
+// Construye el objeto DashboardData completo a partir de un cliente ya
+// resuelto (id + nombre) y del cliente de Supabase que se deba usar para
+// las consultas — el de sesión (respeta RLS, panel del propio cliente) o el
+// de servicio (se salta RLS, panel interno de la agencia). Así solo hay un
+// sitio donde vive la lógica de KPIs/histórico/competidores, tanto si la
+// pide el propio cliente como si la pide un administrador.
+async function construirDatos(
+  supabase: any,
+  cliente: { id: string; nombre_negocio: string },
+  email: string | null
+): Promise<DashboardData> {
   const [
     { data: keywordsRaw },
     { data: objetivosRaw },
@@ -161,7 +153,14 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
     { data: informesRaw },
     { data: competidoresRaw },
     { data: historialRaw },
-  ] = await Promise.all([
+  ]: {
+    // `supabase` es `any` a propósito (acepta tanto el cliente de sesión
+    // como el de servicio), así que se anota aquí el tipo de cada
+    // resultado — si no, todo lo que sale de este Promise.all se vuelve
+    // `any` y las llamadas genéricas de más abajo (p. ej. `.reduce<...>`)
+    // dejan de compilar.
+    data: any[] | null;
+  }[] = await Promise.all([
     supabase
       .from("keywords")
       .select("id, termino, prioridad, posicion_actual, actualizado_en")
@@ -278,7 +277,7 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
   return {
     demo: false,
     cliente: { id: cliente.id, nombreNegocio: cliente.nombre_negocio },
-    email: user.email ?? null,
+    email,
     keywords,
     kpis,
     ultimaActualizacion,
@@ -304,6 +303,49 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
     competidoresPorKeyword,
     competidoresFrecuentes,
   };
+}
+
+// Envuelto con React.cache: el layout del panel y la página activa piden
+// ambos estos datos en la misma petición — cache() hace que la segunda
+// llamada reutilice la primera en vez de repetir las consultas a Supabase.
+// Panel del propio cliente: usa la sesión y respeta RLS, así que cada uno
+// solo puede llegar a ver su propia fila en `clientes`.
+export const getDashboardData = cache(async (): Promise<DashboardData> => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return DEMO;
+
+  const { data: cliente } = await supabase
+    .from("clientes")
+    .select("id, nombre_negocio")
+    .eq("auth_user_id", user.id)
+    .single();
+
+  if (!cliente) return DEMO;
+
+  return construirDatos(supabase, cliente, user.email ?? null);
+});
+
+// Panel interno de la agencia (/admin/clientes/[id]): usa la clave de
+// servicio para poder consultar cualquier cliente por id, sin depender de
+// con qué usuario haya iniciado sesión quien lo pide — así el equipo de
+// Aibe Technologies puede entrar a ver el panel de cualquier negocio de la
+// cartera. Devuelve null si el id no corresponde a ningún cliente (404).
+export const getDashboardDataById = cache(async (clienteId: string): Promise<DashboardData | null> => {
+  const supabase = createServiceClient();
+
+  const { data: cliente } = await supabase
+    .from("clientes")
+    .select("id, nombre_negocio, contacto_email")
+    .eq("id", clienteId)
+    .single();
+
+  if (!cliente) return null;
+
+  return construirDatos(supabase, cliente, cliente.contacto_email ?? null);
 });
 
 export const PILAR_LABEL: Record<string, string> = {

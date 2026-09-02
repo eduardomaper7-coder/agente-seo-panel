@@ -26,7 +26,7 @@ async function getClientes() {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("clientes")
-    .select("id, nombre_negocio, sector, ubicacion, activo")
+    .select("id, nombre_negocio, sector, ubicacion, activo, auth_user_id")
     .order("creado_en", { ascending: false });
   return { clientes: data ?? [], demo: false };
 }
@@ -66,6 +66,7 @@ export default async function AdminClientesPage() {
               <th className="px-4 py-3">Sector</th>
               <th className="px-4 py-3">Ubicación</th>
               <th className="px-4 py-3">Estado</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -82,6 +83,18 @@ export default async function AdminClientesPage() {
                   >
                     {c.activo ? "Activo" : "Pausado"}
                   </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {c.auth_user_id ? (
+                    <Link
+                      href={`/admin/clientes/${c.id}`}
+                      className="text-xs font-medium text-accent hover:underline"
+                    >
+                      Ver panel →
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-ink/30">Sin acceso creado</span>
+                  )}
                 </td>
               </tr>
             ))}

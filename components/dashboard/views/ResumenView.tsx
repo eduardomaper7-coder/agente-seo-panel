@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, FileText, Search, Target, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowRight, Award, Search, Target, TrendingDown, TrendingUp } from "lucide-react";
 import { DashboardData, labelPilar } from "@/lib/dashboard-datos";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardBody } from "@/components/ui/Card";
@@ -22,12 +22,10 @@ function fmtFecha(iso: string | null) {
 // apuntan los enlaces internos ("ver todas las palabras clave", etc.) para
 // que, visto como administrador, nunca se salga hacia /dashboard.
 export function ResumenView({ datos, basePath = "/dashboard" }: { datos: DashboardData; basePath?: string }) {
-  const { cliente, keywords, kpis, ultimaActualizacion, periodoAnalizado, hayHistoricoSuficiente, serieHistorica, objetivos, informes } =
-    datos;
+  const { cliente, keywords, kpis, ultimaActualizacion, periodoAnalizado, hayHistoricoSuficiente, serieHistorica, objetivos } = datos;
 
   const topKeywords = [...keywords].sort((a, b) => (b.prioridad ?? 0) - (a.prioridad ?? 0)).slice(0, 5);
   const objetivosActivos = objetivos.filter((o) => o.estado === "activo").slice(0, 3);
-  const ultimoInforme = informes[0];
 
   return (
     <div className="space-y-6">
@@ -142,62 +140,29 @@ export function ResumenView({ datos, basePath = "/dashboard" }: { datos: Dashboa
         </CardBody>
       </Card>
 
-      {/* Nivel 3 — trabajo en curso, e informes, a un vistazo */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardBody>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-ink">Qué estamos haciendo por ti</h2>
-              <Link href={`${basePath}/plan`} className="flex items-center gap-1 text-xs font-medium text-accent hover:underline">
-                Ver plan completo <ArrowRight size={13} />
-              </Link>
-            </div>
-            {objetivosActivos.length === 0 ? (
-              <EmptyState icon={Target} title="No hay acciones activas ahora mismo" />
-            ) : (
-              <ul className="space-y-2.5">
-                {objetivosActivos.map((o) => (
-                  <li key={o.id} className="flex items-start gap-2.5">
-                    <Badge tone="info">{labelPilar(o.pilar)}</Badge>
-                    <span className="text-sm text-ink/75">{o.descripcion}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardBody>
-            <h2 className="mb-4 text-sm font-semibold text-ink">Tu último informe</h2>
-            {ultimoInforme ? (
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-accent/10 text-accent">
-                    <FileText size={18} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium capitalize text-ink">
-                      {new Date(ultimoInforme.mes).toLocaleDateString("es-ES", { month: "long", year: "numeric" })}
-                    </p>
-                    <p className="text-xs text-ink/45">Resumen mensual de posicionamiento</p>
-                  </div>
-                </div>
-                {ultimoInforme.pdfUrl && (
-                  <a
-                    href={ultimoInforme.pdfUrl}
-                    className="rounded-md border border-ink/15 px-3 py-1.5 text-xs font-medium text-ink/70 hover:border-accent hover:text-accent"
-                  >
-                    Descargar
-                  </a>
-                )}
-              </div>
-            ) : (
-              <EmptyState icon={FileText} title="No hay informes disponibles todavía" description="Aquí aparecerá tu informe mensual en cuanto se genere." />
-            )}
-          </CardBody>
-        </Card>
-      </div>
+      {/* Nivel 3 — trabajo en curso, a un vistazo */}
+      <Card>
+        <CardBody>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-ink">Qué estamos haciendo por ti</h2>
+            <Link href={`${basePath}/plan`} className="flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+              Ver plan completo <ArrowRight size={13} />
+            </Link>
+          </div>
+          {objetivosActivos.length === 0 ? (
+            <EmptyState icon={Target} title="No hay acciones activas ahora mismo" />
+          ) : (
+            <ul className="space-y-2.5">
+              {objetivosActivos.map((o) => (
+                <li key={o.id} className="flex items-start gap-2.5">
+                  <Badge tone="info">{labelPilar(o.pilar)}</Badge>
+                  <span className="text-sm text-ink/75">{o.descripcion}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardBody>
+      </Card>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, FileText, LayoutGrid, ListChecks, Menu, Radar, TrendingUp, X } from "lucide-react";
+import { ArrowLeft, LayoutGrid, ListChecks, Menu, Radar, TrendingUp, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { AibeLogo } from "@/components/ui/AibeLogo";
 
@@ -18,7 +18,6 @@ function navItems(clienteId: string) {
     { href: `${base}/palabras-clave`, label: "Palabras clave", icon: TrendingUp },
     { href: `${base}/competidores`, label: "Competidores", icon: Radar },
     { href: `${base}/plan`, label: "Plan SEO", icon: ListChecks },
-    { href: `${base}/informes`, label: "Informes", icon: FileText },
   ];
 }
 

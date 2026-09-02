@@ -1,10 +1,12 @@
 // Capa única de datos para el panel de cliente (Resumen, Palabras clave,
-// Competidores, Plan SEO, Informes). Sustituye a la lógica que antes vivía
-// duplicada dentro de app/dashboard/page.tsx — mismas tablas, mismas
-// políticas de RLS, mismo cliente de Supabase; solo se ha reorganizado para
-// alimentar varias páginas y para derivar "posición anterior" / "mejor
-// posición" / "cambio" a partir de `posiciones_historial` cuando existe de
-// verdad, en vez de inventar una tendencia.
+// Competidores, Plan SEO). Sustituye a la lógica que antes vivía duplicada
+// dentro de app/dashboard/page.tsx — mismas tablas, mismas políticas de
+// RLS, mismo cliente de Supabase; solo se ha reorganizado para alimentar
+// varias páginas y para derivar "posición anterior" / "mejor posición" /
+// "cambio" a partir de `posiciones_historial` cuando existe de verdad, en
+// vez de inventar una tendencia. Los informes ya no viven aquí: el cliente
+// no los ve en su panel, solo el equipo de Aibe Technologies en
+// /admin/informes (consulta aparte, ver esa página).
 import { cache } from "react";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 export type { BadgeEstado } from "@/lib/seo-bandas";
@@ -36,8 +38,6 @@ export type TareaDatos = {
   evidenciaUrl: string | null;
   creadoEn: string;
 };
-
-export type InformeDatos = { mes: string; pdfUrl: string | null };
 
 export type CompetidorGrupo = {
   keywordId: string;
@@ -72,7 +72,6 @@ export type DashboardData = {
   serieHistorica: SerieHistorica | null;
   objetivos: ObjetivoDatos[];
   tareasCompletadas: TareaDatos[];
-  informes: InformeDatos[];
   competidoresPorKeyword: CompetidorGrupo[];
   competidoresFrecuentes: CompetidorFrecuente[];
 };
@@ -116,7 +115,6 @@ const DEMO: DashboardData = {
   tareasCompletadas: [
     { id: "t1", pilar: "tecnico", descripcion: "Configuración de Search Console", resultado: null, evidenciaUrl: null, creadoEn: new Date().toISOString() },
   ],
-  informes: [{ mes: new Date().toISOString().slice(0, 10), pdfUrl: null }],
   competidoresPorKeyword: [
     {
       keywordId: "d1",
@@ -150,7 +148,6 @@ async function construirDatos(
     { data: keywordsRaw },
     { data: objetivosRaw },
     { data: tareasRaw },
-    { data: informesRaw },
     { data: competidoresRaw },
     { data: historialRaw },
   ]: {
@@ -173,7 +170,6 @@ async function construirDatos(
       .eq("cliente_id", cliente.id)
       .eq("estado", "completada")
       .order("creado_en", { ascending: false }),
-    supabase.from("informes").select("mes, pdf_url").eq("cliente_id", cliente.id).order("mes", { ascending: false }),
     supabase
       .from("competidores")
       .select("keyword_id, dominio, posicion, keywords(termino, prioridad)")
@@ -299,7 +295,6 @@ async function construirDatos(
       evidenciaUrl: t.evidencia_url,
       creadoEn: t.creado_en,
     })),
-    informes: (informesRaw ?? []).map((i: any) => ({ mes: i.mes, pdfUrl: i.pdf_url })),
     competidoresPorKeyword,
     competidoresFrecuentes,
   };

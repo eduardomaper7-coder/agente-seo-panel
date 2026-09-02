@@ -122,8 +122,7 @@ export default function LoginPage() {
             Tu posicionamiento en Google, claro y bajo control.
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-white/60">
-            Consulta la evolución de tus palabras clave, competidores, acciones SEO e informes desde un único
-            lugar.
+            Consulta la evolución de tus palabras clave, competidores y acciones SEO desde un único lugar.
           </p>
 
           {/* Visualización abstracta de evolución/ranking */}

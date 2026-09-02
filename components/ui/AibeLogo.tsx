@@ -6,7 +6,7 @@
 // 1038×427 (≈2.43:1).
 const ASPECT_RATIO = 1038 / 427;
 
-export function AibeLogo({ size = 20 }: { size?: number; dark?: boolean }) {
+export function AibeLogo({ size = 32 }: { size?: number; dark?: boolean }) {
   const height = size * 1.15;
   const width = height * ASPECT_RATIO;
 
